@@ -72,6 +72,39 @@ public class Chunk implements Disposable {
         }
     }
 
+    private boolean isBlockSolid(int x, int y, int z) {
+        if (x < 0 || x >= CHUNK_SIZE || y < 0 || y >= CHUNK_HEIGHT || z < 0 || z >= CHUNK_SIZE) return false;
+        return blocks[x][y][z] != BlockType.AIR;  // Solid means NOT air
+    }
+
+    private boolean shouldRenderBlock(int x, int y, int z) {
+        // Only render if at least one face is adjacent to air or chunk boundary
+        return !isBlockSolid(x + 1, y, z) || !isBlockSolid(x - 1, y, z) ||
+            !isBlockSolid(x, y + 1, z) || !isBlockSolid(x, y - 1, z) ||
+            !isBlockSolid(x, y, z + 1) || !isBlockSolid(x, y, z - 1);
+    }
+
+    // Determine which faces of the block are visible
+    private boolean[] getVisibleFaces(int x, int y, int z) {
+        // Order: right, left, top, bottom, front, back
+        boolean[] visibleFaces = new boolean[6];
+        visibleFaces[Block.RIGHT] = isBlockSolid(x + 1, y, z);
+        visibleFaces[Block.LEFT] = isBlockSolid(x - 1, y, z);
+        visibleFaces[Block.TOP] = isBlockSolid(x, y + 1, z);
+        visibleFaces[Block.BOTTOM] = isBlockSolid(x, y - 1, z);
+        visibleFaces[Block.FRONT] = isBlockSolid(x, y, z + 1);
+        visibleFaces[Block.BACK] = isBlockSolid(x, y, z - 1);
+        return visibleFaces;
+    }
+
+    // End Face Culling
+
+    public void render(ModelBatch modelBatch, Environment environment) {
+        for (ModelInstance model : activeBlockModels)
+            modelBatch.render(model, environment);
+    }
+
+    // Part of the ModelBuilder
     private void addBlockFaces(ModelBuilder builder, int x, int y, int z, boolean[] visibleFaces) {
         BlockType blockType = blocks[x][y][z];
 
@@ -153,38 +186,6 @@ public class Chunk implements Disposable {
                     new Vector3(0, 0, -1)             // normal pointing back
                 );
         }
-    }
-
-    private boolean isBlockSolid(int x, int y, int z) {
-        if (x < 0 || x >= CHUNK_SIZE || y < 0 || y >= CHUNK_HEIGHT || z < 0 || z >= CHUNK_SIZE) return false;
-        return blocks[x][y][z] != BlockType.AIR;  // Solid means NOT air
-    }
-
-    private boolean shouldRenderBlock(int x, int y, int z) {
-        // Only render if at least one face is adjacent to air or chunk boundary
-        return !isBlockSolid(x + 1, y, z) || !isBlockSolid(x - 1, y, z) ||
-            !isBlockSolid(x, y + 1, z) || !isBlockSolid(x, y - 1, z) ||
-            !isBlockSolid(x, y, z + 1) || !isBlockSolid(x, y, z - 1);
-    }
-
-    // Determine which faces of the block are visible
-    private boolean[] getVisibleFaces(int x, int y, int z) {
-        // Order: right, left, top, bottom, front, back
-        boolean[] visibleFaces = new boolean[6];
-        visibleFaces[Block.RIGHT] = isBlockSolid(x + 1, y, z);
-        visibleFaces[Block.LEFT] = isBlockSolid(x - 1, y, z);
-        visibleFaces[Block.TOP] = isBlockSolid(x, y + 1, z);
-        visibleFaces[Block.BOTTOM] = isBlockSolid(x, y - 1, z);
-        visibleFaces[Block.FRONT] = isBlockSolid(x, y, z + 1);
-        visibleFaces[Block.BACK] = isBlockSolid(x, y, z - 1);
-        return visibleFaces;
-    }
-
-    // End Face Culling
-
-    public void render(ModelBatch modelBatch, Environment environment) {
-        for (ModelInstance model : activeBlockModels)
-            modelBatch.render(model, environment);
     }
 
     public int getChunkX() {

@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
-
 import io.github.some_example_name.voxel.BlockType;
 import io.github.some_example_name.voxel.VoxelEngine;
 import io.github.some_example_name.player.Camera;
@@ -62,7 +61,6 @@ public class Main extends ApplicationAdapter {
         voxelEngine.render(modelBatch, environment);
         Camera.getInstance().endFrame(modelBatch);
 
-        // Render the HUD
         HUD.getInstance().render(deltaTime);
     }
 
