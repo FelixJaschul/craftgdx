@@ -74,13 +74,6 @@ public class Camera {
         int mouseX = Gdx.input.getX();
         int mouseY = Gdx.input.getY();
 
-        // Skip the first frame to get initial mouse position
-        if (lastMouseX == -1 || lastMouseY == -1) {
-            lastMouseX = mouseX;
-            lastMouseY = mouseY;
-            return;
-        }
-
         // Calculate how much the mouse has moved
         float deltaX = (mouseX - lastMouseX) * mouseSensitivity;
         float deltaY = (mouseY - lastMouseY) * mouseSensitivity;

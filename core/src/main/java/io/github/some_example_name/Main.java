@@ -18,7 +18,6 @@ import io.github.some_example_name.hud.HUD;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends ApplicationAdapter {
-    private static AssetManager assetManager;
     private ModelBatch modelBatch;
     private Environment environment;
     private VoxelEngine voxelEngine;
@@ -35,14 +34,13 @@ public class Main extends ApplicationAdapter {
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.6f, 0.6f, 0.6f, 1f));
         environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
 
-        assetManager = new AssetManager();
-        for (BlockType type : BlockType.values()) {
+        AssetManager assetManager = new AssetManager();
+        for (BlockType type : BlockType.values())
             if (type.getTexturePath() != null) assetManager.load(type.getTexturePath(), Texture.class);
-        }
         assetManager.finishLoading();
 
         voxelEngine = new VoxelEngine();
-        voxelEngine.initialize(8);
+        voxelEngine.initialize(4);
 
         // Initialize the HUD
         HUD.getInstance().init();
