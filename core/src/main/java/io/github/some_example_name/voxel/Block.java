@@ -30,7 +30,7 @@ public class Block {
     private final float y;
     private final float z;
     private ModelInstance modelInstance;
-    private boolean[] visibleFaces;
+    private final boolean[] visibleFaces;
 
     public Block(BlockType type, float x, float y, float z) {
         this(type, x, y, z, new boolean[]{true, true, true, true, true, true});

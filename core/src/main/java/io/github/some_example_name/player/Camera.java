@@ -12,10 +12,7 @@ public class Camera {
     // Camera movement
     private final Vector3 cameraDirection = new Vector3();
     private final Vector3 tempVector = new Vector3();
-    private float cameraSpeed = 5.0f;
 
-    // Mouse control variables
-    private float mouseSensitivity = 0.2f;
     private int lastMouseX = -1;
     private int lastMouseY = -1;
 
@@ -44,6 +41,7 @@ public class Camera {
 
     public void handleCameraMovement() {
         float deltaTime = Gdx.graphics.getDeltaTime();
+        float cameraSpeed = 5.0f;
         float actualSpeed = cameraSpeed * deltaTime;
 
         // Get camera direction vectors
@@ -75,6 +73,8 @@ public class Camera {
         int mouseY = Gdx.input.getY();
 
         // Calculate how much the mouse has moved
+        // Mouse control variables
+        float mouseSensitivity = 0.2f;
         float deltaX = (mouseX - lastMouseX) * mouseSensitivity;
         float deltaY = (mouseY - lastMouseY) * mouseSensitivity;
 
