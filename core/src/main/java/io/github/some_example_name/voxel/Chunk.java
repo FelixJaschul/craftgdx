@@ -64,26 +64,26 @@ public class Chunk implements Disposable {
     }
 
     private boolean shouldRenderBlock(int x, int y, int z) {
-        return !isBlockSolid(x+1, y, z) || !isBlockSolid(x-1, y, z) ||
-               !isBlockSolid(x, y+1, z) || !isBlockSolid(x, y-1, z) ||
-               !isBlockSolid(x, y, z+1) || !isBlockSolid(x, y, z-1);
+        return isBlockSolid(x + 1, y, z) || isBlockSolid(x - 1, y, z) ||
+            isBlockSolid(x, y + 1, z) || isBlockSolid(x, y - 1, z) ||
+            isBlockSolid(x, y, z + 1) || isBlockSolid(x, y, z - 1);
     }
 
     private boolean isBlockSolid(int x, int y, int z) {
-        if (x < 0 || x >= CHUNK_SIZE || y < 0 || y >= CHUNK_HEIGHT || z < 0 || z >= CHUNK_SIZE) return false;
-        return blocks[x][y][z] != BlockType.AIR;
+        if (x < 0 || x >= CHUNK_SIZE || y < 0 || y >= CHUNK_HEIGHT || z < 0 || z >= CHUNK_SIZE) return true;
+        return blocks[x][y][z] == BlockType.AIR;
     }
 
     // Determine which faces of the block are visible
     private boolean[] getVisibleFaces(int x, int y, int z) {
         // Order: right, left, top, bottom, front, back
         boolean[] visibleFaces = new boolean[6];
-        visibleFaces[Block.RIGHT] = !isBlockSolid(x+1, y, z);
-        visibleFaces[Block.LEFT] = !isBlockSolid(x-1, y, z);
-        visibleFaces[Block.TOP] = !isBlockSolid(x, y+1, z);
-        visibleFaces[Block.BOTTOM] = !isBlockSolid(x, y-1, z);
-        visibleFaces[Block.FRONT] = !isBlockSolid(x, y, z+1);
-        visibleFaces[Block.BACK] = !isBlockSolid(x, y, z-1);
+        visibleFaces[Block.RIGHT] = isBlockSolid(x + 1, y, z);
+        visibleFaces[Block.LEFT] = isBlockSolid(x - 1, y, z);
+        visibleFaces[Block.TOP] = isBlockSolid(x, y + 1, z);
+        visibleFaces[Block.BOTTOM] = isBlockSolid(x, y - 1, z);
+        visibleFaces[Block.FRONT] = isBlockSolid(x, y, z + 1);
+        visibleFaces[Block.BACK] = isBlockSolid(x, y, z - 1);
         return visibleFaces;
     }
 

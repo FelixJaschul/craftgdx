@@ -23,10 +23,6 @@ public class Camera {
 
     private static final Camera INSTANCE = new Camera();
 
-    public static Camera getInstance() {
-        return INSTANCE;
-    }
-
     public void init() {
         // Set up camera
         camera = new PerspectiveCamera(70, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -96,6 +92,10 @@ public class Camera {
         // Store current mouse position for next frame
         lastMouseX = mouseX;
         lastMouseY = mouseY;
+    }
+
+    public static Camera getInstance() {
+        return INSTANCE;
     }
 
     public void startFrame(ModelBatch modelBatch) {
