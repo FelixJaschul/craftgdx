@@ -35,7 +35,7 @@ public class Main extends ApplicationAdapter {
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.6f, 0.6f, 0.6f, 1f));
         environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
 
-        int worldSize = 64;
+        int worldSize = 256;
         int renderDistance = 16;
         voxelEngine = new VoxelEngine();
         voxelEngine.init(worldSize, renderDistance);
