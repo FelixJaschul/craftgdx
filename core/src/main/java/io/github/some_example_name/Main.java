@@ -26,6 +26,7 @@ public class Main extends ApplicationAdapter {
         Camera.getInstance().init();
         Gdx.graphics.setVSync(false);
         Gdx.graphics.setForegroundFPS(Integer.MAX_VALUE);
+        Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
 
         modelBatch = new ModelBatch();
 
@@ -38,9 +39,11 @@ public class Main extends ApplicationAdapter {
             if (type.getTexturePath() != null) assetManager.load(type.getTexturePath(), Texture.class);
         assetManager.finishLoading();
 
-        int numChunks = 4;
+        int worldSize = 16;
+        int renderDistance = 1;
+
         voxelEngine = new VoxelEngine();
-        voxelEngine.initialize(numChunks);
+        voxelEngine.init(worldSize, renderDistance);
 
         // Initialize the HUD
         HUD.getInstance().init();

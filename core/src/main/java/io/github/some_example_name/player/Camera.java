@@ -20,7 +20,6 @@ public class Camera {
     private float currentYaw = 0;
     private static final float MAX_PITCH = 89.0f;
 
-
     private static final Camera INSTANCE = new Camera();
 
     public void init() {
@@ -94,10 +93,6 @@ public class Camera {
         lastMouseY = mouseY;
     }
 
-    public static Camera getInstance() {
-        return INSTANCE;
-    }
-
     public void startFrame(ModelBatch modelBatch) {
         modelBatch.begin(camera);
     }
@@ -110,5 +105,13 @@ public class Camera {
         camera.viewportWidth = width;
         camera.viewportHeight = height;
         camera.update();
+    }
+
+    public static Camera getInstance() {
+        return INSTANCE;
+    }
+
+    public Vector3 getPosition() {
+        return camera.position;
     }
 }

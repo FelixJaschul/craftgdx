@@ -94,6 +94,14 @@ public class Chunk implements Disposable {
             modelBatch.render(model, environment);
     }
 
+    public int getChunkX() {
+        return chunkX;
+    }
+
+    public int getChunkZ() {
+        return chunkZ;
+    }
+
     @Override
     public void dispose() {
         for (ModelInstance model : activeBlockModels)
