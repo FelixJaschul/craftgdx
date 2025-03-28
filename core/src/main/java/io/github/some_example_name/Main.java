@@ -25,7 +25,7 @@ public class Main extends ApplicationAdapter {
     @Override
     public void create() {
         Camera.getInstance().init();
-        Gdx.graphics.setVSync(false);
+        Gdx.graphics.setVSync(true);
         Gdx.graphics.setForegroundFPS(Integer.MAX_VALUE);
         Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
 
@@ -35,34 +35,8 @@ public class Main extends ApplicationAdapter {
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.6f, 0.6f, 0.6f, 1f));
         environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
 
-        AssetManager assetManager = new AssetManager();
-        // Add error handling for texture loading
-        assetManager.setErrorListener(new AssetErrorListener() {
-            @Override
-            public void error(AssetDescriptor asset, Throwable throwable) {
-                System.err.println("Error loading asset: " + asset.fileName);
-                // Continue loading other assets
-            }
-        });
-
-        for (BlockType type : BlockType.values()) {
-            if (type.getTexturePath() != null) {
-                try {
-                    assetManager.load(type.getTexturePath(), Texture.class);
-                } catch (Exception e) {
-                    System.err.println("Could not queue texture: " + type.getTexturePath());
-                }
-            }
-        }
-
-        try {
-            assetManager.finishLoading();
-        } catch (Exception e) {
-            System.err.println("Error during texture loading: " + e.getMessage());
-        }
-
-        int worldSize = 16;
-        int renderDistance = 4;
+        int worldSize = 64;
+        int renderDistance = 16;
         voxelEngine = new VoxelEngine();
         voxelEngine.init(worldSize, renderDistance);
 
@@ -75,7 +49,6 @@ public class Main extends ApplicationAdapter {
 
         Camera.getInstance().handleCameraMovement();
 
-        // Clear the screen
         Gdx.gl.glClearColor(0.4f, 0.6f, 0.9f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
@@ -95,7 +68,9 @@ public class Main extends ApplicationAdapter {
 
     @Override
     public void dispose() {
-        modelBatch.dispose();
-        BlockType.disposeTextures();
+        if (modelBatch != null) modelBatch.dispose();
+        BlockType.dispose();
+        if (voxelEngine != null) voxelEngine.dispose();
+        HUD.getInstance().dispose();
     }
 }

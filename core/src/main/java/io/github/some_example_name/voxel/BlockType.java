@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
+import com.badlogic.gdx.utils.Disposable;
 
 public enum BlockType {
     AIR(null, false),
@@ -45,34 +46,11 @@ public enum BlockType {
 
     public Texture getTexture() {
         if (texturePath == null) return null;
-        if (texture == null) {
-            try {
-                texture = new Texture(texturePath);
-            } catch (Exception e) {
-                // If texture file is missing, create a 1x1 white texture as fallback
-                Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-                pixmap.setColor(getDefaultColor());
-                pixmap.fill();
-                texture = new Texture(pixmap);
-                pixmap.dispose();
-                System.out.println("Warning: Could not load texture " + texturePath + ". Using fallback.");
-            }
-        }
+        if (texture == null) texture = new Texture(texturePath);
         return texture;
     }
 
-    private Color getDefaultColor() {
-        // Return a different color for each block type
-        switch (this) {
-            case STONE: return new Color(0.5f, 0.5f, 0.5f, 1f); // Gray
-            case DIRT: return new Color(0.6f, 0.3f, 0f, 1f);    // Brown
-            case GRASS: return new Color(0.3f, 0.7f, 0.2f, 1f); // Green
-            case SAND: return new Color(0.9f, 0.9f, 0.6f, 1f);  // Light yellow
-            default: return Color.WHITE;
-        }
-    }
-
-    public static void disposeTextures() {
+    public static void dispose() {
         for (BlockType type : values()) {
             if (type.texture != null) {
                 type.texture.dispose();

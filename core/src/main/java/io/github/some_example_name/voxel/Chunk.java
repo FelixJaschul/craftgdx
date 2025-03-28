@@ -27,7 +27,7 @@ public class Chunk implements Disposable {
     private final int chunkZ;
     private final BlockType[][][] blocks;
     private ModelInstance chunkModel;
-    private BoundingBox boundingBox;
+    private final BoundingBox boundingBox;
     private static final Generation terrainGenerator = new Generation();
     private boolean hasMesh = false;
 
@@ -36,7 +36,6 @@ public class Chunk implements Disposable {
         this.chunkZ = chunkZ;
         this.blocks = new BlockType[CHUNK_SIZE][CHUNK_HEIGHT][CHUNK_SIZE];
         this.boundingBox = new BoundingBox();
-        // Don't generate terrain in constructor, let VoxelEngine call it explicitly
     }
 
     public Chunk(ChunkPosition position) {
@@ -46,7 +45,6 @@ public class Chunk implements Disposable {
     public void generateTerrain() {
         int[][] heightMap = terrainGenerator.generateHeightMap(chunkX, chunkZ, CHUNK_SIZE);
         terrainGenerator.fillChunkWithTerrain(blocks, heightMap, CHUNK_HEIGHT);
-        // Don't build mesh here, let VoxelEngine decide when to build it
     }
 
     // Implement Face Culling
@@ -143,18 +141,12 @@ public class Chunk implements Disposable {
     public void render(ModelBatch modelBatch, Environment environment) {
         if (!hasMesh || chunkModel == null) return;
 
-        // Get the camera for frustum culling
         com.badlogic.gdx.graphics.Camera camera = Camera.getInstance().getCamera();
-
-        // Only render if the chunk is visible to the camera
-        if (isVisible(camera)) {
-            modelBatch.render(chunkModel, environment);
-        }
+        if (isVisible(camera)) modelBatch.render(chunkModel, environment);
     }
 
     // Frustum culling - check if chunk is visible to the camera
     private boolean isVisible(com.badlogic.gdx.graphics.Camera camera) {
-        // Simple frustum culling using bounding box
         return boundingBox.isValid() && camera.frustum.boundsInFrustum(boundingBox);
     }
 

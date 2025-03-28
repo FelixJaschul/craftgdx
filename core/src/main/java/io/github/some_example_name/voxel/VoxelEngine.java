@@ -2,33 +2,31 @@ package io.github.some_example_name.voxel;
 
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ObjectMap;
 import io.github.some_example_name.player.Camera;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-public class VoxelEngine {
+public class VoxelEngine implements Disposable {
     private ObjectMap<ChunkPosition, Chunk> chunks;
     private int worldSize;
     private int renderDistance;
-    private ExecutorService chunkLoadExecutor;
-    private Set<ChunkPosition> loadingChunks = new HashSet<>();
+    private final Set<ChunkPosition> chunksToLoad = new HashSet<>();
+    private static final int MAX_CHUNKS_PER_FRAME = 1;
 
     public void init(int worldSize, int renderDistance) {
         this.worldSize = worldSize;
         this.renderDistance = renderDistance;
         this.chunks = new ObjectMap<>();
-        this.chunkLoadExecutor = Executors.newFixedThreadPool(2); // Use 2 threads for chunk loading
 
-        // Initial world generation - only generate chunk data, not meshes
+        // Generate initial world
         for (int x = 0; x < worldSize; x++) {
             for (int z = 0; z < worldSize; z++) {
                 ChunkPosition pos = new ChunkPosition(x, z);
                 Chunk chunk = new Chunk(pos);
-                chunk.generateTerrain(); // Only generate terrain data, not mesh
+                chunk.generateTerrain();
                 chunks.put(pos, chunk);
             }
         }
@@ -42,7 +40,7 @@ public class VoxelEngine {
         // Track which chunks are currently visible
         Set<ChunkPosition> visibleChunks = new HashSet<>();
 
-        // Render only chunks within render distance
+        // Find visible chunks and queue for loading if needed
         for (int x = camChunkX - renderDistance; x <= camChunkX + renderDistance; x++) {
             for (int z = camChunkZ - renderDistance; z <= camChunkZ + renderDistance; z++) {
                 if (x >= 0 && x < worldSize && z >= 0 && z < worldSize) {
@@ -50,50 +48,57 @@ public class VoxelEngine {
                     visibleChunks.add(pos);
 
                     Chunk chunk = chunks.get(pos);
-                    if (chunk != null) {
-                        // If the chunk doesn't have a mesh yet and isn't already loading, build it
-                        if (!chunk.hasMesh() && !loadingChunks.contains(pos)) {
-                            loadingChunks.add(pos);
-                            final Chunk chunkToLoad = chunk;
-                            chunkLoadExecutor.submit(() -> {
-                                chunkToLoad.buildMesh();
-                                loadingChunks.remove(pos);
-                            });
-                        }
-
-                        // Only render if the chunk has a mesh
-                        if (chunk.hasMesh()) {
-                            chunk.render(modelBatch, environment);
-                        }
+                    if (chunk != null && !chunk.hasMesh()) {
+                        chunksToLoad.add(pos);
                     }
                 }
             }
         }
 
+        // Build meshes for a limited number of chunks per frame
+        int chunksBuilt = 0;
+        for (ChunkPosition pos : chunksToLoad) {
+            if (chunksBuilt >= MAX_CHUNKS_PER_FRAME) break;
+
+            Chunk chunk = chunks.get(pos);
+            if (chunk != null && !chunk.hasMesh()) {
+                chunk.buildMesh();
+                chunksBuilt++;
+            }
+        }
+
+        // Remove built chunks from the queue
+        chunksToLoad.removeIf(pos -> chunks.get(pos) == null || chunks.get(pos).hasMesh());
+
+        // Render visible chunks
+        for (ChunkPosition pos : visibleChunks) {
+            Chunk chunk = chunks.get(pos);
+            if (chunk != null && chunk.hasMesh()) {
+                chunk.render(modelBatch, environment);
+            }
+        }
+
         // Unload meshes for chunks that are no longer visible
-        // Use a buffer zone to prevent frequent loading/unloading when moving
         int bufferDistance = renderDistance + 2;
         for (ObjectMap.Entry<ChunkPosition, Chunk> entry : chunks) {
-            ChunkPosition pos = entry.key;
             Chunk chunk = entry.value;
+            ChunkPosition pos = entry.key;
 
             // If chunk is outside buffer distance and has a mesh, unload it
-            if (chunk.hasMesh() && !isWithinDistance(pos, camChunkX, camChunkZ, bufferDistance)) {
+            if (chunk.hasMesh() &&
+                (Math.abs(pos.x - camChunkX) > bufferDistance ||
+                 Math.abs(pos.z - camChunkZ) > bufferDistance)) {
                 chunk.disposeMesh();
             }
         }
     }
 
-    private boolean isWithinDistance(ChunkPosition pos, int camX, int camZ, int distance) {
-        int dx = Math.abs(pos.x - camX);
-        int dz = Math.abs(pos.z - camZ);
-        return dx <= distance && dz <= distance;
-    }
-
+    @Override
     public void dispose() {
-        chunkLoadExecutor.shutdown();
         for (Chunk chunk : chunks.values()) {
             chunk.dispose();
         }
+        chunks.clear();
+        chunksToLoad.clear();
     }
 }
