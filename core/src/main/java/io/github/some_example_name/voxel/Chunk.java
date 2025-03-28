@@ -107,85 +107,31 @@ public class Chunk implements Disposable {
     // Part of the ModelBuilder
     private void addBlockFaces(ModelBuilder builder, int x, int y, int z, boolean[] visibleFaces) {
         BlockType blockType = blocks[x][y][z];
-
-        // Get material for this block type
         Material material = blockType.getMaterial();
-
-        // For each face, check if it should be rendered (if adjacent block is air)
-        // Note: getVisibleFaces returns true if the adjacent block is solid,
-        // so we render faces where visibleFaces is false (meaning the adjacent block is air)
-
         // Right face (positive X)
-        if (!visibleFaces[Block.RIGHT]) {
+        if (!visibleFaces[Block.RIGHT])
             builder.part("right", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates, material)
-                .rect(
-                    new Vector3(x + 1, y + 1, z),     // top-right-back
-                    new Vector3(x + 1, y + 1, z + 1), // top-right-front
-                    new Vector3(x + 1, y, z + 1),     // bottom-right-front
-                    new Vector3(x + 1, y, z),         // bottom-right-back
-                    new Vector3(1, 0, 0)              // normal pointing right
-                );
-        }
-
+                .rect(new Vector3(x + 1, y + 1, z), new Vector3(x + 1, y + 1, z + 1), new Vector3(x + 1, y, z + 1), new Vector3(x + 1, y, z), new Vector3(1, 0, 0));
         // Left face (negative X)
-        if (!visibleFaces[Block.LEFT]) {
+        if (!visibleFaces[Block.LEFT])
             builder.part("left", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates, material)
-                .rect(
-                    new Vector3(x, y + 1, z + 1),     // top-left-front
-                    new Vector3(x, y + 1, z),         // top-left-back
-                    new Vector3(x, y, z),             // bottom-left-back
-                    new Vector3(x, y, z + 1),         // bottom-left-front
-                    new Vector3(-1, 0, 0)             // normal pointing left
-                );
-        }
-
+                .rect(new Vector3(x, y + 1, z + 1), new Vector3(x, y + 1, z), new Vector3(x, y, z), new Vector3(x, y, z + 1), new Vector3(-1, 0, 0));
         // Top face (positive Y)
-        if (!visibleFaces[Block.TOP]) {
+        if (!visibleFaces[Block.TOP])
             builder.part("top", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates, material)
-                .rect(
-                    new Vector3(x + 1, y + 1, z + 1), // top-right-front
-                    new Vector3(x + 1, y + 1, z),     // top-right-back
-                    new Vector3(x, y + 1, z),         // top-left-back
-                    new Vector3(x, y + 1, z + 1),     // top-left-front
-                    new Vector3(0, 1, 0)              // normal pointing up
-                );
-        }
-
+                .rect(new Vector3(x + 1, y + 1, z + 1), new Vector3(x + 1, y + 1, z), new Vector3(x, y + 1, z), new Vector3(x, y + 1, z + 1), new Vector3(0, 1, 0));
         // Bottom face (negative Y)
-        if (!visibleFaces[Block.BOTTOM]) {
+        if (!visibleFaces[Block.BOTTOM])
             builder.part("bottom", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates, material)
-                .rect(
-                    new Vector3(x + 1, y, z),         // bottom-right-back
-                    new Vector3(x + 1, y, z + 1),     // bottom-right-front
-                    new Vector3(x, y, z + 1),         // bottom-left-front
-                    new Vector3(x, y, z),             // bottom-left-back
-                    new Vector3(0, -1, 0)             // normal pointing down
-                );
-        }
-
+                .rect(new Vector3(x + 1, y, z), new Vector3(x + 1, y, z + 1), new Vector3(x, y, z + 1), new Vector3(x, y, z), new Vector3(0, -1, 0));
         // Front face (positive Z)
-        if (!visibleFaces[Block.FRONT]) {
+        if (!visibleFaces[Block.FRONT])
             builder.part("front", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates, material)
-                .rect(
-                    new Vector3(x, y, z + 1),         // bottom-left-front
-                    new Vector3(x + 1, y, z + 1),     // bottom-right-front
-                    new Vector3(x + 1, y + 1, z + 1), // top-right-front
-                    new Vector3(x, y + 1, z + 1),     // top-left-front
-                    new Vector3(0, 0, 1)              // normal pointing front
-                );
-        }
-
+                .rect(new Vector3(x, y, z + 1), new Vector3(x + 1, y, z + 1), new Vector3(x + 1, y + 1, z + 1), new Vector3(x, y + 1, z + 1), new Vector3(0, 0, 1));
         // Back face (negative Z)
-        if (!visibleFaces[Block.BACK]) {
+        if (!visibleFaces[Block.BACK])
             builder.part("back", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates, material)
-                .rect(
-                    new Vector3(x, y, z),             // bottom-left-back
-                    new Vector3(x, y + 1, z),         // top-left-back
-                    new Vector3(x + 1, y + 1, z),     // top-right-back
-                    new Vector3(x + 1, y, z),         // bottom-right-back
-                    new Vector3(0, 0, -1)             // normal pointing back
-                );
-        }
+                .rect(new Vector3(x, y, z), new Vector3(x, y + 1, z), new Vector3(x + 1, y + 1, z), new Vector3(x + 1, y, z), new Vector3(0, 0, -1));
     }
 
     public int getChunkX() {

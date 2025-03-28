@@ -44,7 +44,6 @@ public class Block {
     private void createModelInstance() {
         if (type == BlockType.AIR) return;
 
-        // If no faces are visible, don't create a model
         boolean hasVisibleFace = false;
         for (boolean face : visibleFaces) {
             if (face) {
@@ -52,19 +51,15 @@ public class Block {
                 break;
             }
         }
-
         if (!hasVisibleFace) return;
 
         ModelBuilder modelBuilder = new ModelBuilder();
         modelBuilder.begin();
 
-        // Get material directly from the block type
         Material material = type.getMaterial();
-
         MeshPartBuilder meshBuilder = modelBuilder.part("block", GL20.GL_TRIANGLES,
                 Usage.Position | Usage.Normal | Usage.TextureCoordinates, material);
 
-        // Create only the visible faces
         if (visibleFaces[RIGHT]) createRightFace(meshBuilder);
         if (visibleFaces[LEFT]) createLeftFace(meshBuilder);
         if (visibleFaces[TOP]) createTopFace(meshBuilder);
@@ -77,70 +72,28 @@ public class Block {
         modelInstance.transform.setToTranslation(x, y, z);
     }
 
-    private void createRightFace(MeshPartBuilder meshBuilder) {
-        // Right face (x = HALF_SIZE)
-        meshBuilder.rect(
-            new Vector3(HALF_SIZE, HALF_SIZE, -HALF_SIZE),
-            new Vector3(HALF_SIZE, HALF_SIZE, HALF_SIZE),
-            new Vector3(HALF_SIZE, -HALF_SIZE, HALF_SIZE),
-            new Vector3(HALF_SIZE, -HALF_SIZE, -HALF_SIZE),
-            new Vector3(1, 0, 0)
-        );
+    private void createRightFace(MeshPartBuilder meshBuilder) { // Right face (x = HALF_SIZE)
+        meshBuilder.rect(new Vector3(HALF_SIZE, HALF_SIZE, -HALF_SIZE), new Vector3(HALF_SIZE, HALF_SIZE, HALF_SIZE), new Vector3(HALF_SIZE, -HALF_SIZE, HALF_SIZE), new Vector3(HALF_SIZE, -HALF_SIZE, -HALF_SIZE), new Vector3(1, 0, 0));
     }
 
-    private void createLeftFace(MeshPartBuilder meshBuilder) {
-        // Left face (x = -HALF_SIZE)
-        meshBuilder.rect(
-            new Vector3(-HALF_SIZE, HALF_SIZE, HALF_SIZE),
-            new Vector3(-HALF_SIZE, HALF_SIZE, -HALF_SIZE),
-            new Vector3(-HALF_SIZE, -HALF_SIZE, -HALF_SIZE),
-            new Vector3(-HALF_SIZE, -HALF_SIZE, HALF_SIZE),
-            new Vector3(-1, 0, 0)
-        );
+    private void createLeftFace(MeshPartBuilder meshBuilder) { // Left face (x = -HALF_SIZE)
+        meshBuilder.rect(new Vector3(-HALF_SIZE, HALF_SIZE, HALF_SIZE), new Vector3(-HALF_SIZE, HALF_SIZE, -HALF_SIZE), new Vector3(-HALF_SIZE, -HALF_SIZE, -HALF_SIZE), new Vector3(-HALF_SIZE, -HALF_SIZE, HALF_SIZE), new Vector3(-1, 0, 0));
     }
 
-    private void createTopFace(MeshPartBuilder meshBuilder) {
-        // Top face (y = HALF_SIZE)
-        meshBuilder.rect(
-            new Vector3(HALF_SIZE, HALF_SIZE, HALF_SIZE),
-            new Vector3(HALF_SIZE, HALF_SIZE, -HALF_SIZE),
-            new Vector3(-HALF_SIZE, HALF_SIZE, -HALF_SIZE),
-            new Vector3(-HALF_SIZE, HALF_SIZE, HALF_SIZE),
-            new Vector3(0, 1, 0)
-        );
+    private void createTopFace(MeshPartBuilder meshBuilder) { // Top face (y = HALF_SIZE)
+        meshBuilder.rect(new Vector3(HALF_SIZE, HALF_SIZE, HALF_SIZE), new Vector3(HALF_SIZE, HALF_SIZE, -HALF_SIZE), new Vector3(-HALF_SIZE, HALF_SIZE, -HALF_SIZE), new Vector3(-HALF_SIZE, HALF_SIZE, HALF_SIZE), new Vector3(0, 1, 0));
     }
 
-    private void createBottomFace(MeshPartBuilder meshBuilder) {
-        // Bottom face (y = -HALF_SIZE)
-        meshBuilder.rect(
-            new Vector3(HALF_SIZE, -HALF_SIZE, -HALF_SIZE),
-            new Vector3(HALF_SIZE, -HALF_SIZE, HALF_SIZE),
-            new Vector3(-HALF_SIZE, -HALF_SIZE, HALF_SIZE),
-            new Vector3(-HALF_SIZE, -HALF_SIZE, -HALF_SIZE),
-            new Vector3(0, -1, 0)
-        );
+    private void createBottomFace(MeshPartBuilder meshBuilder) { // Bottom face (y = -HALF_SIZE)
+        meshBuilder.rect(new Vector3(HALF_SIZE, -HALF_SIZE, -HALF_SIZE), new Vector3(HALF_SIZE, -HALF_SIZE, HALF_SIZE), new Vector3(-HALF_SIZE, -HALF_SIZE, HALF_SIZE), new Vector3(-HALF_SIZE, -HALF_SIZE, -HALF_SIZE), new Vector3(0, -1, 0));
     }
 
-    private void createFrontFace(MeshPartBuilder meshBuilder) {
-        // Front face (z = HALF_SIZE)
-        meshBuilder.rect(
-            new Vector3(-HALF_SIZE, -HALF_SIZE, HALF_SIZE),
-            new Vector3(HALF_SIZE, -HALF_SIZE, HALF_SIZE),
-            new Vector3(HALF_SIZE, HALF_SIZE, HALF_SIZE),
-            new Vector3(-HALF_SIZE, HALF_SIZE, HALF_SIZE),
-            new Vector3(0, 0, 1)
-        );
+    private void createFrontFace(MeshPartBuilder meshBuilder) { // Front face (z = HALF_SIZE)
+        meshBuilder.rect(new Vector3(-HALF_SIZE, -HALF_SIZE, HALF_SIZE), new Vector3(HALF_SIZE, -HALF_SIZE, HALF_SIZE), new Vector3(HALF_SIZE, HALF_SIZE, HALF_SIZE), new Vector3(-HALF_SIZE, HALF_SIZE, HALF_SIZE), new Vector3(0, 0, 1));
     }
 
-    private void createBackFace(MeshPartBuilder meshBuilder) {
-        // Back face (z = -HALF_SIZE)
-        meshBuilder.rect(
-            new Vector3(HALF_SIZE, -HALF_SIZE, -HALF_SIZE),
-            new Vector3(-HALF_SIZE, -HALF_SIZE, -HALF_SIZE),
-            new Vector3(-HALF_SIZE, HALF_SIZE, -HALF_SIZE),
-            new Vector3(HALF_SIZE, HALF_SIZE, -HALF_SIZE),
-            new Vector3(0, 0, -1)
-        );
+    private void createBackFace(MeshPartBuilder meshBuilder) { // Back face (z = -HALF_SIZE)
+        meshBuilder.rect(new Vector3(HALF_SIZE, -HALF_SIZE, -HALF_SIZE), new Vector3(-HALF_SIZE, -HALF_SIZE, -HALF_SIZE), new Vector3(-HALF_SIZE, HALF_SIZE, -HALF_SIZE), new Vector3(HALF_SIZE, HALF_SIZE, -HALF_SIZE), new Vector3(0, 0, -1));
     }
 
     public ModelInstance getModelInstance() {
