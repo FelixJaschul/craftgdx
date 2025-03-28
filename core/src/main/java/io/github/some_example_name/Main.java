@@ -40,12 +40,10 @@ public class Main extends ApplicationAdapter {
         assetManager.finishLoading();
 
         int worldSize = 16;
-        int renderDistance = 1;
-
+        int renderDistance = 4;
         voxelEngine = new VoxelEngine();
         voxelEngine.init(worldSize, renderDistance);
 
-        // Initialize the HUD
         HUD.getInstance().init();
     }
 
@@ -77,8 +75,6 @@ public class Main extends ApplicationAdapter {
     @Override
     public void dispose() {
         modelBatch.dispose();
-        voxelEngine.dispose();
-        BlockType.dispose();
-        HUD.getInstance().dispose();
+        BlockType.disposeTextures();
     }
 }

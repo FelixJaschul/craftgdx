@@ -8,9 +8,6 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
-import com.badlogic.gdx.math.Matrix3;
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
 public class Block {
@@ -62,10 +59,8 @@ public class Block {
         ModelBuilder modelBuilder = new ModelBuilder();
         modelBuilder.begin();
 
-        // Create material with texture
-        Material material = new Material();
-        TextureAttribute textureAttribute = TextureAttribute.createDiffuse(type.getTexture());
-        material.set(textureAttribute);
+        // Get material directly from the block type
+        Material material = type.getMaterial();
 
         MeshPartBuilder meshBuilder = modelBuilder.part("block", GL20.GL_TRIANGLES,
                 Usage.Position | Usage.Normal | Usage.TextureCoordinates, material);

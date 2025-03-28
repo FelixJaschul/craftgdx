@@ -56,9 +56,8 @@ public class VoxelEngine implements Disposable {
 
     @Override
     public void dispose() {
-        for (Chunk chunk : chunks.values()) {
+        for (Chunk chunk : chunks.values())
             chunk.dispose();
-        }
         chunks.clear();
     }
 

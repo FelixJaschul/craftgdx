@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.Matrix4;
 
 public class Camera {
     private PerspectiveCamera camera;
@@ -36,7 +37,7 @@ public class Camera {
 
     public void handleCameraMovement() {
         float deltaTime = Gdx.graphics.getDeltaTime();
-        float cameraSpeed = 5.0f;
+        float cameraSpeed = 30.0f;
         float actualSpeed = cameraSpeed * deltaTime;
 
         // Get camera direction vectors
@@ -113,5 +114,9 @@ public class Camera {
 
     public Vector3 getPosition() {
         return camera.position;
+    }
+
+    public Matrix4 getCombinedMatrix() {
+        return camera.combined;
     }
 }
