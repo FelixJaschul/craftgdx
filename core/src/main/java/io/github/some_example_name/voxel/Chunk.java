@@ -25,7 +25,7 @@ public class Chunk implements Disposable {
 
     private final int chunkX;
     private final int chunkZ;
-    private final BlockType[][][] blocks;
+    private final BlockType[][][] blocks; // Stores the Block data
     private ModelInstance chunkModel;
     private final BoundingBox boundingBox;
     private static final Generation terrainGenerator = new Generation();

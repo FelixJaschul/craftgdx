@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class VoxelEngine implements Disposable {
-    private ObjectMap<ChunkPosition, Chunk> chunks;
+    private ObjectMap<ChunkPosition, Chunk> chunks; // Stores the Map TODO: save in file for faster loading
     private int worldSize;
     private int renderDistance;
     private final Set<ChunkPosition> chunksToLoad = new HashSet<>();
