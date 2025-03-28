@@ -39,8 +39,9 @@ public class Main extends ApplicationAdapter {
             if (type.getTexturePath() != null) assetManager.load(type.getTexturePath(), Texture.class);
         assetManager.finishLoading();
 
+        int numChunks = 4;
         voxelEngine = new VoxelEngine();
-        voxelEngine.initialize(4);
+        voxelEngine.initialize(numChunks);
 
         // Initialize the HUD
         HUD.getInstance().init();
