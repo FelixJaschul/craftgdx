@@ -119,4 +119,8 @@ public class Camera {
     public Matrix4 getCombinedMatrix() {
         return camera.combined;
     }
+
+    public com.badlogic.gdx.graphics.Camera getCamera() {
+        return camera;
+    }
 }

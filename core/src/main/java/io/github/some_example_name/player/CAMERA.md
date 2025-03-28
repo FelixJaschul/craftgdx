@@ -45,3 +45,8 @@ Returns the singleton instance of the Camera
 
 ### getPosition()
 Returns the camera's current position vector
+
+### getCamera()
+Returns the actual LibGDX PerspectiveCamera object:
+- Used for frustum culling in the Chunk class
+- Provides access to the camera's frustum for visibility checks

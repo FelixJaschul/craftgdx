@@ -26,6 +26,9 @@ Called every frame to update and render the game:
 - Updates camera position based on player input
 - Clears the screen with a sky blue color
 - Renders the voxel world using the camera and environment settings
+  - Uses optimized chunk rendering with one mesh per chunk
+  - Applies frustum culling to skip rendering off-screen chunks
+  - Batches geometry by material for better performance
 - Renders the HUD with FPS information
 
 ### resize(int width, int height)
@@ -34,8 +37,8 @@ Handles window resize events:
 - Updates the HUD's viewport
 
 ### dispose()
-Cleans up resources when the game closes: - not necessary but helpful
+Cleans up resources when the game closes:
 - Disposes the model batch
-- Disposes the voxel engine - not called 
+- Disposes the voxel engine
 - Disposes block type textures
 - Disposes the HUD

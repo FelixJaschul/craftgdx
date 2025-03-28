@@ -2,6 +2,8 @@ package io.github.some_example_name;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetDescriptor;
+import com.badlogic.gdx.assets.AssetErrorListener;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -34,9 +36,30 @@ public class Main extends ApplicationAdapter {
         environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
 
         AssetManager assetManager = new AssetManager();
-        for (BlockType type : BlockType.values())
-            if (type.getTexturePath() != null) assetManager.load(type.getTexturePath(), Texture.class);
-        assetManager.finishLoading();
+        // Add error handling for texture loading
+        assetManager.setErrorListener(new AssetErrorListener() {
+            @Override
+            public void error(AssetDescriptor asset, Throwable throwable) {
+                System.err.println("Error loading asset: " + asset.fileName);
+                // Continue loading other assets
+            }
+        });
+
+        for (BlockType type : BlockType.values()) {
+            if (type.getTexturePath() != null) {
+                try {
+                    assetManager.load(type.getTexturePath(), Texture.class);
+                } catch (Exception e) {
+                    System.err.println("Could not queue texture: " + type.getTexturePath());
+                }
+            }
+        }
+
+        try {
+            assetManager.finishLoading();
+        } catch (Exception e) {
+            System.err.println("Error during texture loading: " + e.getMessage());
+        }
 
         int worldSize = 16;
         int renderDistance = 4;
