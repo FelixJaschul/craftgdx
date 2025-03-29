@@ -37,12 +37,7 @@ The terrain generation can be customized by modifying these constants in the `Ge
 
 1. The system generates a height map using Perlin noise for each chunk
 2. It uses multiple octaves of noise to add detail to the terrain
-3. The height map determines the surface level at each x,z coordinate
-4. The system fills the 3D block array with appropriate block types:
-   - Air above the surface
-   - Surface blocks (dirt, stone) at the top layer
-   - Dirt for a few layers below the surface
-   - Stone for deep underground
+3. The height map determines the surface level at each x,z coordinates
 
 ## Future Enhancements
 

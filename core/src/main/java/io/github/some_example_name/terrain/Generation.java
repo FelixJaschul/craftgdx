@@ -25,6 +25,25 @@ public class Generation {
         this.perlinNoise = new PerlinNoise(seed);
     }
 
+    public void fillChunkWithTerrain(BlockType[][][] blocks, int[][] heightMap, int chunkHeight) {
+        int chunkSize = heightMap.length;
+
+        for (int x = 0; x < chunkSize; x++) {
+            for (int z = 0; z < chunkSize; z++) {
+                int height = Math.min(heightMap[x][z], chunkHeight - 1);
+                // Fill blocks based on height
+                for (int y = 0; y < chunkHeight; y++) {
+                    if (y > height) blocks[x][y][z] = BlockType.AIR;
+                    else blocks[x][y][z] = BlockType.DIRT;
+                }
+            }
+        }
+    }
+
+
+    // Perlin Noise Implementation
+    // Random Math
+
     public int[][] generateHeightMap(int chunkX, int chunkZ, int chunkSize) {
         int[][] heightMap = new int[chunkSize][chunkSize];
 
@@ -35,12 +54,12 @@ public class Generation {
                 float worldZ = (chunkZ * chunkSize) + z;
                 // Generate base terrain using Perlin noise
                 float noiseValue = (float) perlinNoise.noise(
-                        worldX * TERRAIN_SCALE,
-                        worldZ * TERRAIN_SCALE);
+                    worldX * TERRAIN_SCALE,
+                    worldZ * TERRAIN_SCALE);
                 // Add some variation with a second octave of noise
                 float detailNoise = (float) perlinNoise.noise(
-                        worldX * TERRAIN_SCALE * 2,
-                        worldZ * TERRAIN_SCALE * 2) * 0.5f;
+                    worldX * TERRAIN_SCALE * 2,
+                    worldZ * TERRAIN_SCALE * 2) * 0.5f;
 
                 // Combine noise values
                 noiseValue = (noiseValue + detailNoise) * 0.75f;
@@ -57,30 +76,6 @@ public class Generation {
 
         return heightMap;
     }
-
-    public void fillChunkWithTerrain(BlockType[][][] blocks, int[][] heightMap, int chunkHeight) {
-        int chunkSize = heightMap.length;
-
-        for (int x = 0; x < chunkSize; x++) {
-            for (int z = 0; z < chunkSize; z++) {
-                int height = Math.min(heightMap[x][z], chunkHeight - 1);
-                // Fill blocks based on height
-                for (int y = 0; y < chunkHeight; y++) {
-                    if (y > height) blocks[x][y][z] = BlockType.AIR;  // Air above the surface
-                    else if (y == height) {
-                        if (height <= WATER_LEVEL + 1) blocks[x][y][z] = BlockType.SAND; // Beaches
-                        else if (height > WATER_LEVEL + 6) blocks[x][y][z] = BlockType.GRASS; // Mountains
-                        else blocks[x][y][z] = BlockType.DIRT; // Normal terrain
-                    } else if (y >= height - 3 && y < height) blocks[x][y][z] = BlockType.DIRT; // Layer below surface
-                    else blocks[x][y][z] = BlockType.STONE; // Deep underground
-                }
-            }
-        }
-    }
-
-
-    // Perlin Noise Implementation
-    // Random Math
 
     private static class PerlinNoise {
         private final int[] permutation;
@@ -138,13 +133,13 @@ public class Generation {
             int BB = permutation[B + 1] + Z;
 
             return lerp(w, lerp(v, lerp(u, grad(permutation[AA], x, y, z),
-                                           grad(permutation[BA], x - 1, y, z)),
-                                   lerp(u, grad(permutation[AB], x, y - 1, z),
-                                           grad(permutation[BB], x - 1, y - 1, z))),
-                           lerp(v, lerp(u, grad(permutation[AA + 1], x, y, z - 1),
-                                           grad(permutation[BA + 1], x - 1, y, z - 1)),
-                                   lerp(u, grad(permutation[AB + 1], x, y - 1, z - 1),
-                                           grad(permutation[BB + 1], x - 1, y - 1, z - 1))));
+                        grad(permutation[BA], x - 1, y, z)),
+                    lerp(u, grad(permutation[AB], x, y - 1, z),
+                        grad(permutation[BB], x - 1, y - 1, z))),
+                lerp(v, lerp(u, grad(permutation[AA + 1], x, y, z - 1),
+                        grad(permutation[BA + 1], x - 1, y, z - 1)),
+                    lerp(u, grad(permutation[AB + 1], x, y - 1, z - 1),
+                        grad(permutation[BB + 1], x - 1, y - 1, z - 1))));
         }
     }
 

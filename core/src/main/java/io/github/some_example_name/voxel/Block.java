@@ -58,7 +58,7 @@ public class Block {
 
         Material material = type.getMaterial();
         MeshPartBuilder meshBuilder = modelBuilder.part("block", GL20.GL_TRIANGLES,
-                Usage.Position | Usage.Normal | Usage.TextureCoordinates, material);
+            Usage.Position | Usage.Normal | Usage.TextureCoordinates, material);
 
         if (visibleFaces[RIGHT]) createRightFace(meshBuilder);
         if (visibleFaces[LEFT]) createLeftFace(meshBuilder);

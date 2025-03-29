@@ -8,8 +8,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.Matrix4;
 
 public class Camera {
-    private PerspectiveCamera camera;
-
     // Camera movement
     private final Vector3 cameraDirection = new Vector3();
     private final Vector3 tempVector = new Vector3();
@@ -21,17 +19,16 @@ public class Camera {
     private float currentYaw = 0;
     private static final float MAX_PITCH = 89.0f;
 
+    private PerspectiveCamera camera;
     private static final Camera INSTANCE = new Camera();
 
     public void init() {
-        // Set up camera
         camera = new PerspectiveCamera(70, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         camera.position.set(1000f, 10f, 1000f);
         camera.near = 0.1f;
         camera.far = 300f;
         camera.update();
 
-        // Center the cursor
         Gdx.input.setCursorCatched(true);
     }
 
@@ -68,15 +65,7 @@ public class Camera {
         int mouseX = Gdx.input.getX();
         int mouseY = Gdx.input.getY();
 
-        // Initialize mouse position on first frame
-        if (lastMouseX == -1 || lastMouseY == -1) {
-            lastMouseX = mouseX;
-            lastMouseY = mouseY;
-            return; // Skip the first frame to avoid jumpy camera
-        }
-
         // Calculate how much the mouse has moved
-        // Mouse control variables
         float mouseSensitivity = 0.2f;
         float deltaX = (mouseX - lastMouseX) * mouseSensitivity;
         float deltaY = (mouseY - lastMouseY) * mouseSensitivity;

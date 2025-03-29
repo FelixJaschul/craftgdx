@@ -123,8 +123,8 @@ public class Chunk implements Disposable {
             !isBlockSolid(x, y, z + 1) || !isBlockSolid(x, y, z - 1);
     }
 
-    // Determine which faces of the block are visible
     private boolean[] getVisibleFaces(int x, int y, int z) {
+        // Determine which faces of the block are visible
         // Order: right, left, top, bottom, front, back
         boolean[] visibleFaces = new boolean[6];
         visibleFaces[Block.RIGHT] = isBlockSolid(x + 1, y, z);

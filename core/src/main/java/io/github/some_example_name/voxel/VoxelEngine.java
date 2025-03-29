@@ -48,9 +48,7 @@ public class VoxelEngine implements Disposable {
                     visibleChunks.add(pos);
 
                     Chunk chunk = chunks.get(pos);
-                    if (chunk != null && !chunk.hasMesh()) {
-                        chunksToLoad.add(pos);
-                    }
+                    if (chunk != null && !chunk.hasMesh()) chunksToLoad.add(pos);
                 }
             }
         }
@@ -73,9 +71,7 @@ public class VoxelEngine implements Disposable {
         // Render visible chunks
         for (ChunkPosition pos : visibleChunks) {
             Chunk chunk = chunks.get(pos);
-            if (chunk != null && chunk.hasMesh()) {
-                chunk.render(modelBatch, environment);
-            }
+            if (chunk != null && chunk.hasMesh()) chunk.render(modelBatch, environment);
         }
 
         // Unload meshes for chunks that are no longer visible
@@ -85,19 +81,14 @@ public class VoxelEngine implements Disposable {
             ChunkPosition pos = entry.key;
 
             // If chunk is outside buffer distance and has a mesh, unload it
-            if (chunk.hasMesh() &&
-                (Math.abs(pos.x - camChunkX) > bufferDistance ||
-                 Math.abs(pos.z - camChunkZ) > bufferDistance)) {
-                chunk.disposeMesh();
-            }
+            if (chunk.hasMesh() && (Math.abs(pos.x - camChunkX) > bufferDistance || Math.abs(pos.z - camChunkZ) > bufferDistance))
+                    chunk.disposeMesh();
         }
     }
 
     @Override
     public void dispose() {
-        for (Chunk chunk : chunks.values()) {
-            chunk.dispose();
-        }
+        for (Chunk chunk : chunks.values()) chunk.dispose();
         chunks.clear();
         chunksToLoad.clear();
     }
