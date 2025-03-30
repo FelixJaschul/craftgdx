@@ -5,21 +5,21 @@ import java.util.Random;
 
 public class Generation {
     // Constants for noise generation
-    private static final int SEED = 42;
-    private static final float TERRAIN_SCALE = 0.02f;
-    private static final float AMPLITUDE = 30.0f;
-    private static final int BASE_HEIGHT = 2;
+    private static final int SEED = 42; // 42
+    private static final float TERRAIN_SCALE = 0.01f; // 0.01
+    private static final float AMPLITUDE = 50.0f; // 50
+    private static final int BASE_HEIGHT = 20; // 20
 
     // Constants for terrain features
-    private static final float MOUNTAIN_THRESHOLD = 0f;
-    private static final float PLAINS_THRESHOLD = 0f;
-    private static final float WATER_LEVEL = 2.0f;
-    private static final float LAKE_THRESHOLD = 0f;
-    private static final float LAKE_FREQUENCY = 0.00001f;
+    private static final float MOUNTAIN_THRESHOLD = 0f; // 0
+    private static final float PLAINS_THRESHOLD = 0f; // 0
+    private static final float WATER_LEVEL = 2.0f; // 2
+    private static final float LAKE_THRESHOLD = 0f; // 0
+    private static final float LAKE_FREQUENCY = 0.00001f; // 0.00001
 
     // Block depth constants
-    private static final int DIRT_DEPTH = 3;
-    private static final int SAND_DEPTH = 2;
+    private static final int DIRT_DEPTH = 3; // 3
+    private static final int SAND_DEPTH = 2; // 2
 
     private final PerlinNoise perlinNoise;
     private final Random random;
@@ -111,7 +111,7 @@ public class Generation {
                 // Plains (flatter terrain)
                 else if (biomeNoise > PLAINS_THRESHOLD) height += (int)(AMPLITUDE * 0.3f * noiseValue);
                 // Default rolling hills
-                else height += (int)(AMPLITUDE * 0.7f * noiseValue);
+                else height += (int) (AMPLITUDE * 0.7f * noiseValue);
 
                 // Create occasional lakes (rare)
                 if (lakeNoise > LAKE_THRESHOLD && height > WATER_LEVEL - 3 && height < WATER_LEVEL + 5) height = (int) (WATER_LEVEL - 1);
