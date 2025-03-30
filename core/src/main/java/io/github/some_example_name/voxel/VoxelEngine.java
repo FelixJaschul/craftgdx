@@ -14,7 +14,7 @@ public class VoxelEngine implements Disposable {
     private int worldSize;
     private int renderDistance;
     private final Set<ChunkPosition> chunksToLoad = new HashSet<>();
-    private static final int MAX_CHUNKS_PER_FRAME = 1;
+    private static final int MAX_CHUNKS_PER_FRAME = 100;
 
     public void init(int worldSize, int renderDistance) {
         this.worldSize = worldSize;

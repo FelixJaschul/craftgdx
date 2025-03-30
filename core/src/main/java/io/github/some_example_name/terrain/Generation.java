@@ -11,38 +11,60 @@ public class Generation {
     private static final int BASE_HEIGHT = 2;
 
     // Constants for terrain features
-    private static final float MOUNTAIN_THRESHOLD = 0.6f;
-    private static final float WATER_LEVEL = 3.0f;
+    private static final float MOUNTAIN_THRESHOLD = 0f;
+    private static final float PLAINS_THRESHOLD = 0f;
+    private static final float WATER_LEVEL = 2.0f;
+    private static final float LAKE_THRESHOLD = 0f;
+    private static final float LAKE_FREQUENCY = 0.00001f;
+
+    // Block depth constants
+    private static final int DIRT_DEPTH = 3;
+    private static final int SAND_DEPTH = 2;
 
     private final PerlinNoise perlinNoise;
+    private final Random random;
 
     public Generation() {
         this(SEED);
     }
 
     public Generation(int seed) {
-        new Random(seed);
+        this.random = new Random(seed);
         this.perlinNoise = new PerlinNoise(seed);
     }
 
     public void fillChunkWithTerrain(BlockType[][][] blocks, int[][] heightMap, int chunkHeight) {
         int chunkSize = heightMap.length;
+        boolean[][] isLake = new boolean[chunkSize][chunkSize];
 
+        // First pass: identify lakes
+        for (int x = 0; x < chunkSize; x++) {
+            for (int z = 0; z < chunkSize; z++) {
+                if (heightMap[x][z] < WATER_LEVEL) isLake[x][z] = true;
+            }
+        }
+
+        // Second pass: fill blocks
         for (int x = 0; x < chunkSize; x++) {
             for (int z = 0; z < chunkSize; z++) {
                 int height = Math.min(heightMap[x][z], chunkHeight - 1);
+
                 // Fill blocks based on height
                 for (int y = 0; y < chunkHeight; y++) {
-                    if (y > height) blocks[x][y][z] = BlockType.AIR;
+                    // Air above the terrain
+                    if (y > height) {
+                        // Water in lakes
+                        if (y <= WATER_LEVEL && isLake[x][z]) blocks[x][y][z] = BlockType.DIRT;
+                        else blocks[x][y][z] = BlockType.AIR;
+                    }
+                    // Surface and below
                     else blocks[x][y][z] = BlockType.DIRT;
                 }
             }
         }
     }
 
-
     // Perlin Noise Implementation
-    // Random Math
 
     public int[][] generateHeightMap(int chunkX, int chunkZ, int chunkSize) {
         int[][] heightMap = new int[chunkSize][chunkSize];
@@ -52,29 +74,93 @@ public class Generation {
                 // Convert local coordinates to world coordinates
                 float worldX = (chunkX * chunkSize) + x;
                 float worldZ = (chunkZ * chunkSize) + z;
+
                 // Generate base terrain using Perlin noise
-                float noiseValue = (float) perlinNoise.noise(
+                float baseNoise = (float) perlinNoise.noise(
                     worldX * TERRAIN_SCALE,
                     worldZ * TERRAIN_SCALE);
+
                 // Add some variation with a second octave of noise
                 float detailNoise = (float) perlinNoise.noise(
                     worldX * TERRAIN_SCALE * 2,
                     worldZ * TERRAIN_SCALE * 2) * 0.5f;
 
+                // Add a third octave for more detail
+                float microDetail = (float) perlinNoise.noise(
+                    worldX * TERRAIN_SCALE * 4,
+                    worldZ * TERRAIN_SCALE * 4) * 0.25f;
+
                 // Combine noise values
-                noiseValue = (noiseValue + detailNoise) * 0.75f;
-                // Calculate height based on noise
+                float noiseValue = (baseNoise + detailNoise + microDetail) * 0.57f;
+
+                // Biome determination
+                float biomeNoise = (float) perlinNoise.noise(
+                    worldX * TERRAIN_SCALE * 0.5f,
+                    worldZ * TERRAIN_SCALE * 0.5f);
+
+                // Lake determination (rare)
+                float lakeNoise = (float) perlinNoise.noise(
+                    worldX * LAKE_FREQUENCY,
+                    worldZ * LAKE_FREQUENCY);
+
+                // Calculate height based on biome
                 int height = BASE_HEIGHT;
-                // Add mountains in areas with high noise values
-                if (noiseValue > MOUNTAIN_THRESHOLD) height += (int)(AMPLITUDE * noiseValue * 1.5f);
-                else height += (int)(AMPLITUDE * noiseValue);
+
+                // Mountains (higher elevation)
+                if (biomeNoise > MOUNTAIN_THRESHOLD) height += (int)(AMPLITUDE * 1.5f * noiseValue);
+                // Plains (flatter terrain)
+                else if (biomeNoise > PLAINS_THRESHOLD) height += (int)(AMPLITUDE * 0.3f * noiseValue);
+                // Default rolling hills
+                else height += (int)(AMPLITUDE * 0.7f * noiseValue);
+
+                // Create occasional lakes (rare)
+                if (lakeNoise > LAKE_THRESHOLD && height > WATER_LEVEL - 3 && height < WATER_LEVEL + 5) height = (int) (WATER_LEVEL - 1);
 
                 height = Math.max(1, height);
                 heightMap[x][z] = height;
             }
         }
 
-        return heightMap;
+        // Apply smoothing to create more natural terrain transitions
+        // Especially important for Minecraft-like terrain
+        return smoothTerrain(heightMap, 2);
+    }
+
+    public int[][] smoothTerrain(int[][] heightMap, int iterations) {
+        int size = heightMap.length;
+        int[][] result = new int[size][size];
+
+        // Copy the original height map
+        for (int x = 0; x < size; x++) System.arraycopy(heightMap[x], 0, result[x], 0, size);
+
+        // Apply smoothing iterations
+        for (int iter = 0; iter < iterations; iter++) {
+            int[][] temp = new int[size][size];
+
+            // Copy the edges as they are
+            for (int i = 0; i < size; i++) {
+                temp[0][i] = result[0][i];
+                temp[size-1][i] = result[size-1][i];
+                temp[i][0] = result[i][0];
+                temp[i][size-1] = result[i][size-1];
+            }
+
+            // Smooth the interior
+            for (int x = 1; x < size-1; x++) {
+                for (int z = 1; z < size-1; z++) {
+                    // Average of surrounding heights
+                    int sum = result[x-1][z-1] + result[x-1][z] + result[x-1][z+1] +
+                        result[x][z-1]   + result[x][z]   + result[x][z+1] +
+                        result[x+1][z-1] + result[x+1][z] + result[x+1][z+1];
+                    temp[x][z] = sum / 9;
+                }
+            }
+
+            // Update result for next iteration
+            for (int x = 0; x < size; x++) System.arraycopy(temp[x], 0, result[x], 0, size);
+        }
+
+        return result;
     }
 
     private static class PerlinNoise {

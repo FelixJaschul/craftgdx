@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.Matrix4;
@@ -21,7 +22,7 @@ import java.util.Map;
 
 public class Chunk implements Disposable {
     public static final int CHUNK_SIZE = 16;
-    public static final int CHUNK_HEIGHT = 16;
+    public static final int CHUNK_HEIGHT = 50;
 
     private final int chunkX;
     private final int chunkZ;
@@ -96,9 +97,8 @@ public class Chunk implements Disposable {
         Model model = modelBuilder.end();
 
         // Dispose old model if it exists
-        if (chunkModel != null && chunkModel.model != null) {
+        if (chunkModel != null && chunkModel.model != null)
             chunkModel.model.dispose();
-        }
 
         // Create model instance and set its position
         chunkModel = new ModelInstance(model);
@@ -127,12 +127,12 @@ public class Chunk implements Disposable {
         // Determine which faces of the block are visible
         // Order: right, left, top, bottom, front, back
         boolean[] visibleFaces = new boolean[6];
-        visibleFaces[Block.RIGHT] = isBlockSolid(x + 1, y, z);
-        visibleFaces[Block.LEFT] = isBlockSolid(x - 1, y, z);
-        visibleFaces[Block.TOP] = isBlockSolid(x, y + 1, z);
-        visibleFaces[Block.BOTTOM] = isBlockSolid(x, y - 1, z);
-        visibleFaces[Block.FRONT] = isBlockSolid(x, y, z + 1);
-        visibleFaces[Block.BACK] = isBlockSolid(x, y, z - 1);
+        visibleFaces[Block.RIGHT] = !isBlockSolid(x + 1, y, z);
+        visibleFaces[Block.LEFT] = !isBlockSolid(x - 1, y, z);
+        visibleFaces[Block.TOP] = !isBlockSolid(x, y + 1, z);
+        visibleFaces[Block.BOTTOM] = !isBlockSolid(x, y - 1, z);
+        visibleFaces[Block.FRONT] = !isBlockSolid(x, y, z + 1);
+        visibleFaces[Block.BACK] = !isBlockSolid(x, y, z - 1);
         return visibleFaces;
     }
 
@@ -153,64 +153,70 @@ public class Chunk implements Disposable {
     // Part of the ModelBuilder
     private void addBlockFaces(MeshPartBuilder builder, int x, int y, int z, boolean[] visibleFaces) {
         // Right face (positive X)
-        if (!visibleFaces[Block.RIGHT])
+        if (visibleFaces[Block.RIGHT]) {
             builder.rect(
-                new Vector3(x + 1, y + 1, z),
-                new Vector3(x + 1, y + 1, z + 1),
-                new Vector3(x + 1, y, z + 1),
-                new Vector3(x + 1, y, z),
-                new Vector3(1, 0, 0)
+                new Vector3(x + 1, y + 1, z),       // top-back
+                new Vector3(x + 1, y + 1, z + 1),   // top-front
+                new Vector3(x + 1, y, z + 1),       // bottom-front
+                new Vector3(x + 1, y, z),           // bottom-back
+                new Vector3(1, 0, 0)                // normal pointing right
             );
+        }
 
         // Left face (negative X)
-        if (!visibleFaces[Block.LEFT])
+        if (visibleFaces[Block.LEFT]) {
             builder.rect(
-                new Vector3(x, y + 1, z + 1),
-                new Vector3(x, y + 1, z),
-                new Vector3(x, y, z),
-                new Vector3(x, y, z + 1),
-                new Vector3(-1, 0, 0)
+                new Vector3(x, y + 1, z + 1),       // top-front
+                new Vector3(x, y + 1, z),           // top-back
+                new Vector3(x, y, z),               // bottom-back
+                new Vector3(x, y, z + 1),           // bottom-front
+                new Vector3(-1, 0, 0)               // normal pointing left
             );
+        }
 
         // Top face (positive Y)
-        if (!visibleFaces[Block.TOP])
+        if (visibleFaces[Block.TOP]) {
             builder.rect(
-                new Vector3(x + 1, y + 1, z + 1),
-                new Vector3(x + 1, y + 1, z),
-                new Vector3(x, y + 1, z),
-                new Vector3(x, y + 1, z + 1),
-                new Vector3(0, 1, 0)
+                new Vector3(x + 1, y + 1, z + 1),   // right-front
+                new Vector3(x + 1, y + 1, z),       // right-back
+                new Vector3(x, y + 1, z),           // left-back
+                new Vector3(x, y + 1, z + 1),       // left-front
+                new Vector3(0, 1, 0)                // normal pointing up
             );
+        }
 
         // Bottom face (negative Y)
-        if (!visibleFaces[Block.BOTTOM])
+        if (visibleFaces[Block.BOTTOM]) {
             builder.rect(
-                new Vector3(x + 1, y, z),
-                new Vector3(x + 1, y, z + 1),
-                new Vector3(x, y, z + 1),
-                new Vector3(x, y, z),
-                new Vector3(0, -1, 0)
+                new Vector3(x + 1, y, z),           // right-back
+                new Vector3(x + 1, y, z + 1),       // right-front
+                new Vector3(x, y, z + 1),           // left-front
+                new Vector3(x, y, z),               // left-back
+                new Vector3(0, -1, 0)               // normal pointing down
             );
+        }
 
         // Front face (positive Z)
-        if (!visibleFaces[Block.FRONT])
+        if (visibleFaces[Block.FRONT]) {
             builder.rect(
-                new Vector3(x, y, z + 1),
-                new Vector3(x + 1, y, z + 1),
-                new Vector3(x + 1, y + 1, z + 1),
-                new Vector3(x, y + 1, z + 1),
-                new Vector3(0, 0, 1)
+                new Vector3(x, y, z + 1),           // bottom-left
+                new Vector3(x + 1, y, z + 1),       // bottom-right
+                new Vector3(x + 1, y + 1, z + 1),   // top-right
+                new Vector3(x, y + 1, z + 1),       // top-left
+                new Vector3(0, 0, 1)                // normal pointing front
             );
+        }
 
         // Back face (negative Z)
-        if (!visibleFaces[Block.BACK])
+        if (visibleFaces[Block.BACK]) {
             builder.rect(
-                new Vector3(x, y, z),
-                new Vector3(x, y + 1, z),
-                new Vector3(x + 1, y + 1, z),
-                new Vector3(x + 1, y, z),
-                new Vector3(0, 0, -1)
+                new Vector3(x + 1, y, z),           // bottom-right
+                new Vector3(x, y, z),               // bottom-left
+                new Vector3(x, y + 1, z),           // top-left
+                new Vector3(x + 1, y + 1, z),       // top-right
+                new Vector3(0, 0, -1)               // normal pointing back
             );
+        }
     }
 
     public int getChunkX() {

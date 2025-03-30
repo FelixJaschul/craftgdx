@@ -9,10 +9,11 @@ import com.badlogic.gdx.utils.Disposable;
 
 public enum BlockType {
     AIR(null, false),
-    STONE("Blocks/Cobblestone.jpg", true),
+    STONE("Blocks/Stone.jpg", true),
     DIRT("Blocks/Dirt.jpg", true),
     GRASS("Blocks/Grass.jpg", true),
-    SAND("Blocks/Sand.jpg", true);
+    SAND("Blocks/Sand.jpg", true),
+    WATER("Blocks/Water.jpg", false);
 
     private final boolean isSolid;
     private final String texturePath;
