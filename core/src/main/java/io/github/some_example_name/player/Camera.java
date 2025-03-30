@@ -24,7 +24,7 @@ public class Camera {
 
     public void init() {
         camera = new PerspectiveCamera(70, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        camera.position.set(1000f, 10f, 1000f);
+        camera.position.set(1000f, 30f, 1000f);
         camera.near = 0.1f;
         camera.far = 300f;
         camera.update();

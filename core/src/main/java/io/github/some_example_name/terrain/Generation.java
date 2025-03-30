@@ -22,14 +22,13 @@ public class Generation {
     private static final int SAND_DEPTH = 2; // 2
 
     private final PerlinNoise perlinNoise;
-    private final Random random;
 
     public Generation() {
         this(SEED);
     }
 
     public Generation(int seed) {
-        this.random = new Random(seed);
+        new Random(seed);
         this.perlinNoise = new PerlinNoise(seed);
     }
 
@@ -54,7 +53,7 @@ public class Generation {
                     // Air above the terrain
                     if (y > height) {
                         // Water in lakes
-                        if (y <= WATER_LEVEL && isLake[x][z]) blocks[x][y][z] = BlockType.DIRT;
+                        if (y <= WATER_LEVEL && isLake[x][z]) blocks[x][y][z] = BlockType.WATER;
                         else blocks[x][y][z] = BlockType.AIR;
                     }
                     // Surface and below
