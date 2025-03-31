@@ -12,14 +12,9 @@ public class Generation {
 
     // Constants for terrain features
     private static final float MOUNTAIN_THRESHOLD = 0f; // 0
-    private static final float PLAINS_THRESHOLD = 0f; // 0
     private static final float WATER_LEVEL = 2.0f; // 2
     private static final float LAKE_THRESHOLD = 0f; // 0
     private static final float LAKE_FREQUENCY = 0.00001f; // 0.00001
-
-    // Block depth constants
-    private static final int DIRT_DEPTH = 3; // 3
-    private static final int SAND_DEPTH = 2; // 2
 
     private final PerlinNoise perlinNoise;
 
@@ -37,11 +32,9 @@ public class Generation {
         boolean[][] isLake = new boolean[chunkSize][chunkSize];
 
         // First pass: identify lakes
-        for (int x = 0; x < chunkSize; x++) {
-            for (int z = 0; z < chunkSize; z++) {
+        for (int x = 0; x < chunkSize; x++)
+            for (int z = 0; z < chunkSize; z++)
                 if (heightMap[x][z] < WATER_LEVEL) isLake[x][z] = true;
-            }
-        }
 
         // Second pass: fill blocks
         for (int x = 0; x < chunkSize; x++) {
@@ -103,26 +96,29 @@ public class Generation {
                     worldZ * LAKE_FREQUENCY);
 
                 // Calculate height based on biome
-                int height = BASE_HEIGHT;
-
-                // Mountains (higher elevation)
-                if (biomeNoise > MOUNTAIN_THRESHOLD) height += (int)(AMPLITUDE * 1.5f * noiseValue);
-                // Plains (flatter terrain)
-                else if (biomeNoise > PLAINS_THRESHOLD) height += (int)(AMPLITUDE * 0.3f * noiseValue);
-                // Default rolling hills
-                else height += (int) (AMPLITUDE * 0.7f * noiseValue);
-
-                // Create occasional lakes (rare)
-                if (lakeNoise > LAKE_THRESHOLD && height > WATER_LEVEL - 3 && height < WATER_LEVEL + 5) height = (int) (WATER_LEVEL - 1);
-
-                height = Math.max(1, height);
+                int height = getHeight(biomeNoise, noiseValue, lakeNoise);
                 heightMap[x][z] = height;
             }
         }
 
         // Apply smoothing to create more natural terrain transitions
         // Especially important for Minecraft-like terrain
-        return smoothTerrain(heightMap, 2);
+        return smoothTerrain(heightMap, 1);
+    }
+
+    private static int getHeight(float biomeNoise, float noiseValue, float lakeNoise) {
+        int height = BASE_HEIGHT;
+
+        // Mountains (higher elevation)
+        if (biomeNoise > MOUNTAIN_THRESHOLD) height += (int)(AMPLITUDE * 1.5f * noiseValue);
+        // Plains (flatter terrain)
+        else height += (int) (AMPLITUDE * 0.7f * noiseValue);
+
+        // Create occasional lakes (rare)
+        if (lakeNoise > LAKE_THRESHOLD && height > WATER_LEVEL - 3 && height < WATER_LEVEL + 5) height = (int) (WATER_LEVEL - 1);
+
+        height = Math.max(1, height);
+        return height;
     }
 
     public int[][] smoothTerrain(int[][] heightMap, int iterations) {

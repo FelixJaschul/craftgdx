@@ -56,7 +56,7 @@ public class Chunk implements Disposable {
         modelBuilder.begin();
 
         // Map to store MeshPartBuilders for each material
-        Map<Material, MeshPartBuilder> meshBuilders = new HashMap<>();
+        Map<BlockType, MeshPartBuilder> meshBuilders = new HashMap<>();
 
         // First pass: determine which blocks need to be rendered and batch by material
         for (int x = 0; x < CHUNK_SIZE; x++) {
@@ -64,20 +64,18 @@ public class Chunk implements Disposable {
                 for (int z = 0; z < CHUNK_SIZE; z++) {
                     BlockType type = blocks[x][y][z];
                     if (type != BlockType.AIR && shouldRenderBlock(x, y, z)) {
-                        Material material = type.getMaterial();
-
-                        // Get or create mesh builder for this material
-                        MeshPartBuilder builder = meshBuilders.get(material);
+                        // Get or create mesh builder for this block type
+                        MeshPartBuilder builder = meshBuilders.get(type);
                         if (builder == null) {
-                            // Create a new part for this material
-                            String partId = "material_" + material.hashCode();
+                            // Create a new part for this block type
+                            String partId = "blocktype_" + type.name();
                             builder = modelBuilder.part(
                                 partId,
                                 GL20.GL_TRIANGLES,
                                 VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates,
-                                material
+                                type.getMaterial()
                             );
-                            meshBuilders.put(material, builder);
+                            meshBuilders.put(type, builder);
                         }
 
                         // Add block faces to the appropriate mesh builder
