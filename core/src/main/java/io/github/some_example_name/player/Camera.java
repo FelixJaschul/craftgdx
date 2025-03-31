@@ -13,110 +13,105 @@ import com.badlogic.gdx.math.Matrix4;
  * Implemented as a singleton to provide global access.
  */
 public class Camera {
-    /** Temporary vector for camera direction calculations */
     private final Vector3 cameraDirection = new Vector3();
-    /** Temporary vector for various calculations */
     private final Vector3 tempVector = new Vector3();
+    private final Vector3 rightAxis = new Vector3();
 
-    /** Last mouse X position for calculating mouse movement */
     private int lastMouseX = -1;
-    /** Last mouse Y position for calculating mouse movement */
     private int lastMouseY = -1;
-
-    /** Current pitch angle of the camera (up/down rotation) */
     private float currentPitch = 0;
-    /** Current yaw angle of the camera (left/right rotation) */
     private float currentYaw = 0;
-    /** Maximum pitch angle to prevent camera flipping */
-    private static final float MAX_PITCH = 89.0f;
 
-    /** The LibGDX camera instance */
+    private static final float MAX_PITCH = 89.0f;
+    private static final float MOUSE_SENSITIVITY = 0.2f;
+    private static final float CAMERA_SPEED = 30.0f;
+    private static final float FOV = 70f;
+    private static final float NEAR_PLANE = 0.1f;
+    private static final float FAR_PLANE = 300f;
+    private static final float INITIAL_X = 1000f;
+    private static final float INITIAL_Y = 30f;
+    private static final float INITIAL_Z = 1000f;
+
     private PerspectiveCamera camera;
-    /** Singleton instance of the camera */
     private static final Camera INSTANCE = new Camera();
 
-    /**
-     * Initializes the camera with default settings.
-     * Sets up the perspective, position, and input handling.
-     */
     public void init() {
-        camera = new PerspectiveCamera(70, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        camera.position.set(1000f, 30f, 1000f);
-        camera.near = 0.1f;
-        camera.far = 300f;
+        camera = new PerspectiveCamera(FOV, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        camera.position.set(INITIAL_X, INITIAL_Y, INITIAL_Z);
+        camera.near = NEAR_PLANE;
+        camera.far = FAR_PLANE;
         camera.update();
 
         Gdx.input.setCursorCatched(true);
     }
 
-    /**
-     * Updates the camera position and rotation based on user input.
-     * Should be called once per frame in the render loop.
-     */
     public void handleCameraMovement() {
         float deltaTime = Gdx.graphics.getDeltaTime();
-        float cameraSpeed = 30.0f;
-        float actualSpeed = cameraSpeed * deltaTime;
+        float actualSpeed = CAMERA_SPEED * deltaTime;
 
-        // Get camera direction vectors
-        cameraDirection.set(camera.direction);
-        cameraDirection.y = 0;
-        cameraDirection.nor();
-        tempVector.set(cameraDirection).crs(Vector3.Y).nor();
-
-        // Forward/backward movement
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) camera.position.add(tempVector.set(cameraDirection).scl(actualSpeed));
-        if (Gdx.input.isKeyPressed(Input.Keys.S)) camera.position.add(tempVector.set(cameraDirection).scl(-actualSpeed));
-
-        // Strafe left/right
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) camera.position.add(tempVector.set(cameraDirection).crs(Vector3.Y).nor().scl(-actualSpeed));
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) camera.position.add(tempVector.set(cameraDirection).crs(Vector3.Y).nor().scl(actualSpeed));
-
-        // Up/down movement
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) camera.position.add(0, actualSpeed, 0);
-        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) camera.position.add(0, -actualSpeed, 0);
-
-        // Handle mouse movement for camera rotation
+        updateDirectionVectors();
+        handleKeyboardInput(actualSpeed);
         handleMouseLook();
 
         camera.update();
     }
 
-    /**
-     * Handles mouse input for camera rotation.
-     * Updates the camera direction based on mouse movement.
-     */
+    private void updateDirectionVectors() {
+        cameraDirection.set(camera.direction);
+        cameraDirection.y = 0;
+        cameraDirection.nor();
+    }
+
+    private void handleKeyboardInput(float speed) {
+        // Forward/backward movement
+        if (Gdx.input.isKeyPressed(Input.Keys.W))
+            camera.position.add(tempVector.set(cameraDirection).scl(speed));
+        if (Gdx.input.isKeyPressed(Input.Keys.S))
+            camera.position.add(tempVector.set(cameraDirection).scl(-speed));
+
+        // Strafe left/right
+        if (Gdx.input.isKeyPressed(Input.Keys.A))
+            camera.position.add(tempVector.set(cameraDirection).crs(Vector3.Y).nor().scl(-speed));
+        if (Gdx.input.isKeyPressed(Input.Keys.D))
+            camera.position.add(tempVector.set(cameraDirection).crs(Vector3.Y).nor().scl(speed));
+
+        // Up/down movement
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE))
+            camera.position.add(0, speed, 0);
+        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
+            camera.position.add(0, -speed, 0);
+    }
+
     private void handleMouseLook() {
         int mouseX = Gdx.input.getX();
         int mouseY = Gdx.input.getY();
 
-        // Calculate how much the mouse has moved
-        float mouseSensitivity = 0.2f;
-        float deltaX = (mouseX - lastMouseX) * mouseSensitivity;
-        float deltaY = (mouseY - lastMouseY) * mouseSensitivity;
+        if (lastMouseX == -1 || lastMouseY == -1) {
+            lastMouseX = mouseX;
+            lastMouseY = mouseY;
+            return;
+        }
 
+        float deltaX = (mouseX - lastMouseX) * MOUSE_SENSITIVITY;
+        float deltaY = (mouseY - lastMouseY) * MOUSE_SENSITIVITY;
+
+        updateCameraRotation(deltaX, deltaY);
+
+        lastMouseX = mouseX;
+        lastMouseY = mouseY;
+    }
+
+    private void updateCameraRotation(float deltaX, float deltaY) {
         currentYaw -= deltaX;
-        currentPitch -= deltaY;
+        currentPitch = Math.max(-MAX_PITCH, Math.min(MAX_PITCH, currentPitch - deltaY));
 
-        // Clamp pitch to prevent camera flipping
-        if (currentPitch > MAX_PITCH) currentPitch = MAX_PITCH;
-        else if (currentPitch < -MAX_PITCH) currentPitch = -MAX_PITCH;
-
-        // Reset camera direction and up vector
         camera.direction.set(0, 0, -1);
         camera.up.set(0, 1, 0);
 
-        // Apply yaw rotation (around Y axis)
+        // Apply rotations
         camera.rotate(Vector3.Y, currentYaw);
-
-        // Apply pitch rotation (around X axis)
-        Vector3 rightAxis = new Vector3();
         rightAxis.set(camera.direction).crs(camera.up).nor();
         camera.rotate(rightAxis, currentPitch);
-
-        // Store current mouse position for next frame
-        lastMouseX = mouseX;
-        lastMouseY = mouseY;
     }
 
     /**
