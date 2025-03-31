@@ -51,23 +51,18 @@ public class Chunk implements Disposable {
     // Implement Face Culling
 
     public void buildMesh() {
-        // Create a single ModelBuilder for the entire chunk
         ModelBuilder modelBuilder = new ModelBuilder();
         modelBuilder.begin();
 
-        // Map to store MeshPartBuilders for each material
         Map<BlockType, MeshPartBuilder> meshBuilders = new HashMap<>();
 
-        // First pass: determine which blocks need to be rendered and batch by material
         for (int x = 0; x < CHUNK_SIZE; x++) {
             for (int y = 0; y < CHUNK_HEIGHT; y++) {
                 for (int z = 0; z < CHUNK_SIZE; z++) {
                     BlockType type = blocks[x][y][z];
                     if (type != BlockType.AIR && shouldRenderBlock(x, y, z)) {
-                        // Get or create mesh builder for this block type
                         MeshPartBuilder builder = meshBuilders.get(type);
                         if (builder == null) {
-                            // Create a new part for this block type
                             String partId = "blocktype_" + type.name();
                             builder = modelBuilder.part(
                                 partId,
@@ -77,32 +72,25 @@ public class Chunk implements Disposable {
                             );
                             meshBuilders.put(type, builder);
                         }
-
-                        // Add block faces to the appropriate mesh builder
                         addBlockFaces(builder, x, y, z, getVisibleFaces(x, y, z));
                     }
                 }
             }
         }
 
-        // If no blocks were added, don't create an empty model
         if (meshBuilders.isEmpty()) {
             hasMesh = false;
             return;
         }
 
-        // Create a single model for the entire chunk
         Model model = modelBuilder.end();
 
-        // Dispose old model if it exists
         if (chunkModel != null && chunkModel.model != null)
             chunkModel.model.dispose();
 
-        // Create model instance and set its position
         chunkModel = new ModelInstance(model);
         chunkModel.transform.setToTranslation(chunkX * CHUNK_SIZE, 0, chunkZ * CHUNK_SIZE);
 
-        // Calculate bounding box for frustum culling
         chunkModel.calculateBoundingBox(boundingBox);
         boundingBox.mul(chunkModel.transform);
 
