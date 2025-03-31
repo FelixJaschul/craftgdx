@@ -9,13 +9,30 @@ import io.github.some_example_name.player.Camera;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Core engine for managing the voxel-based world.
+ * Handles chunk generation, loading, rendering, and memory management
+ * based on player position and view distance.
+ */
 public class VoxelEngine implements Disposable {
-    private ObjectMap<ChunkPosition, Chunk> chunks; // Stores the Map TODO: save in file for faster loading
+    /** Map of all chunks indexed by their position */
+    private ObjectMap<ChunkPosition, Chunk> chunks; // TODO: save in file for faster loading
+    /** Size of the world in chunks */
     private int worldSize;
+    /** Maximum distance (in chunks) to render from the player */
     private int renderDistance;
+    /** Set of chunks that need to have their meshes built */
     private final Set<ChunkPosition> chunksToLoad = new HashSet<>();
+    /** Maximum number of chunk meshes to build per frame for performance */
     private static final int MAX_CHUNKS_PER_FRAME = 100;
 
+    /**
+     * Initializes the voxel engine with the specified world parameters.
+     * Generates the initial world chunks.
+     *
+     * @param worldSize The size of the world in chunks (width and depth)
+     * @param renderDistance The maximum distance (in chunks) to render from the player
+     */
     public void init(int worldSize, int renderDistance) {
         this.worldSize = worldSize;
         this.renderDistance = renderDistance;
@@ -32,6 +49,13 @@ public class VoxelEngine implements Disposable {
         }
     }
 
+    /**
+     * Renders the voxel world for the current frame.
+     * Handles dynamic loading and unloading of chunk meshes based on camera position.
+     *
+     * @param modelBatch The model batch to use for rendering
+     * @param environment The lighting environment to use for rendering
+     */
     public void render(ModelBatch modelBatch, Environment environment) {
         // Get camera position in chunk coordinates
         int camChunkX = (int) Math.floor(Camera.getInstance().getPosition().x / Chunk.CHUNK_SIZE);
@@ -86,6 +110,10 @@ public class VoxelEngine implements Disposable {
         }
     }
 
+    /**
+     * Disposes of all resources used by the voxel engine.
+     * Cleans up all chunks and clears the chunk collections.
+     */
     @Override
     public void dispose() {
         for (Chunk chunk : chunks.values()) chunk.dispose();
