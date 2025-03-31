@@ -16,7 +16,7 @@ import java.util.Set;
  */
 public class VoxelEngine implements Disposable {
     /** Map of all chunks indexed by their position */
-    private ObjectMap<ChunkPosition, Chunk> chunks; // TODO: save in file for faster loading
+    private ObjectMap<ChunkPosition, Chunk> chunks;
     /** Size of the world in chunks */
     private int worldSize;
     /** Maximum distance (in chunks) to render from the player */
