@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 public enum BlockType {
     AIR(null, false),
     STONE("Blocks/Stone.jpg", true),
+    COBBLESTONE("Blocks/Cobblestone.jpg", true),
     DIRT("Blocks/Dirt.jpg", true),
     GRASS("Blocks/Grass.jpg", true),
     SAND("Blocks/Sand.jpg", true),
