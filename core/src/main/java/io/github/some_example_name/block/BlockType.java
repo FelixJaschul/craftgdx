@@ -1,4 +1,4 @@
-package io.github.some_example_name.voxel;
+package io.github.some_example_name.block;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.Material;

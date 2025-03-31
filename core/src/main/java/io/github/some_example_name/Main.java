@@ -8,10 +8,10 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 
-import io.github.some_example_name.voxel.BlockType;
-import io.github.some_example_name.voxel.VoxelEngine;
+import io.github.some_example_name.block.BlockType;
+import io.github.some_example_name.engine.VoxelEngine;
 import io.github.some_example_name.player.Camera;
-import io.github.some_example_name.hud.HUD;
+import io.github.some_example_name.ui.FpsCounter;
 
 /**
  * Main application class for the voxel-based game.
@@ -30,7 +30,7 @@ public class Main extends ApplicationAdapter {
     @Override
     public void create() {
         Camera.getInstance().init();
-        Gdx.graphics.setVSync(false);
+        Gdx.graphics.setVSync(true);
         Gdx.graphics.setForegroundFPS(Integer.MAX_VALUE);
 
         modelBatch = new ModelBatch();
@@ -38,7 +38,7 @@ public class Main extends ApplicationAdapter {
 
         setupEnvironment();
         voxelEngine.init(WORLD_SIZE, RENDER_DISTANCE);
-        HUD.getInstance().init();
+        FpsCounter.getInstance().init();
     }
 
     private void setupEnvironment() {
@@ -59,7 +59,7 @@ public class Main extends ApplicationAdapter {
         voxelEngine.render(modelBatch, environment);
         camera.endFrame(modelBatch);
 
-        HUD.getInstance().render(deltaTime);
+        FpsCounter.getInstance().render(deltaTime);
     }
 
     private void clearScreen() {
@@ -70,7 +70,7 @@ public class Main extends ApplicationAdapter {
     @Override
     public void resize(int width, int height) {
         Camera.getInstance().resize(width, height);
-        HUD.getInstance().resize(width, height);
+        FpsCounter.getInstance().resize(width, height);
     }
 
     @Override
@@ -78,6 +78,6 @@ public class Main extends ApplicationAdapter {
         if (voxelEngine != null) voxelEngine.dispose();
         if (modelBatch != null) modelBatch.dispose();
         BlockType.dispose();
-        HUD.getInstance().dispose();
+        FpsCounter.getInstance().dispose();
     }
 }

@@ -1,6 +1,6 @@
 package io.github.some_example_name.terrain;
 
-import io.github.some_example_name.voxel.BlockType;
+import io.github.some_example_name.block.BlockType;
 import java.util.Random;
 
 /**

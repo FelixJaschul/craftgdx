@@ -1,4 +1,4 @@
-package io.github.some_example_name.voxel;
+package io.github.some_example_name.chunk;
 
 /**
  * Represents the position of a chunk in the world.

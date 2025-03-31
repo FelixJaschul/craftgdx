@@ -1,10 +1,12 @@
-package io.github.some_example_name.voxel;
+package io.github.some_example_name.engine;
 
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ObjectMap;
+import io.github.some_example_name.chunk.Chunk;
+import io.github.some_example_name.chunk.ChunkPosition;
 import io.github.some_example_name.player.Camera;
 
 import java.util.HashSet;

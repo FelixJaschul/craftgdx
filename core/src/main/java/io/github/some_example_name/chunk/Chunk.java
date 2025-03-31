@@ -1,4 +1,4 @@
-package io.github.some_example_name.voxel;
+package io.github.some_example_name.chunk;
 
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
@@ -11,6 +11,8 @@ import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Disposable;
+import io.github.some_example_name.block.Block;
+import io.github.some_example_name.block.BlockType;
 import io.github.some_example_name.terrain.Generation;
 import io.github.some_example_name.player.Camera;
 import java.util.HashMap;

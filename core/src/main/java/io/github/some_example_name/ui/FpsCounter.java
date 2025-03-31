@@ -1,4 +1,4 @@
-package io.github.some_example_name.hud;
+package io.github.some_example_name.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -12,8 +12,8 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 /**
  * Manages the Heads-Up Display (HUD) for the game.
  */
-public class HUD implements Disposable {
-    private static final HUD INSTANCE = new HUD();
+public class FpsCounter implements Disposable {
+    private static final FpsCounter INSTANCE = new FpsCounter();
     private static final float FPS_UPDATE_INTERVAL = 1.0f;
     private static final int FPS_X_POSITION = 10;
     private static final Color FONT_COLOR = Color.WHITE;
@@ -28,13 +28,13 @@ public class HUD implements Disposable {
     private int lastFps;
     private boolean initialized = false;
 
-    private HUD() {
+    private FpsCounter() {
         camera = new OrthographicCamera();
         viewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera);
         batch = new SpriteBatch();
     }
 
-    public static HUD getInstance() {
+    public static FpsCounter getInstance() {
         return INSTANCE;
     }
 
