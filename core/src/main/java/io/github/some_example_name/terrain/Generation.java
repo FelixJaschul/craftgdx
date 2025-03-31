@@ -12,6 +12,7 @@ public class Generation {
 
     // Constants for terrain features
     private static final float MOUNTAIN_THRESHOLD = 0f; // 0
+    private static final float GRASS_HEIGHT_TRESHOLD = 0f;
     private static final float WATER_LEVEL = 2.0f; // 2
     private static final float LAKE_THRESHOLD = 0f; // 0
     private static final float LAKE_FREQUENCY = 0.00001f; // 0.00001
@@ -32,9 +33,11 @@ public class Generation {
         boolean[][] isLake = new boolean[chunkSize][chunkSize];
 
         // First pass: identify lakes
-        for (int x = 0; x < chunkSize; x++)
-            for (int z = 0; z < chunkSize; z++)
+        for (int x = 0; x < chunkSize; x++) {
+            for (int z = 0; z < chunkSize; z++) {
                 if (heightMap[x][z] < WATER_LEVEL) isLake[x][z] = true;
+            }
+        }
 
         // Second pass: fill blocks
         for (int x = 0; x < chunkSize; x++) {
@@ -50,7 +53,13 @@ public class Generation {
                         else blocks[x][y][z] = BlockType.AIR;
                     }
                     // Surface and below
-                    else blocks[x][y][z] = BlockType.DIRT;
+                    else {
+                        if (heightMap[x][z] > GRASS_HEIGHT_TRESHOLD) {
+                            blocks[x][y][z] = BlockType.GRASS; // Example: set specific block type based on height
+                        } else {
+                            blocks[x][y][z] = BlockType.DIRT;
+                        }
+                    }
                 }
             }
         }
