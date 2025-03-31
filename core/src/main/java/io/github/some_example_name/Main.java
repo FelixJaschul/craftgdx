@@ -43,9 +43,9 @@ public class Main extends ApplicationAdapter {
     @Override
     public void create() {
         Camera.getInstance().init();
-        Gdx.graphics.setVSync(true);
+        Gdx.graphics.setVSync(false);
         Gdx.graphics.setForegroundFPS(Integer.MAX_VALUE);
-        Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+        // Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
 
         modelBatch = new ModelBatch();
         voxelEngine = new VoxelEngine();
@@ -57,7 +57,7 @@ public class Main extends ApplicationAdapter {
 
         // Initialize voxel world parameters
         int worldSize = 128;
-        int renderDistance = 16;
+        int renderDistance = 12;
         voxelEngine.init(worldSize, renderDistance);
 
         HUD.getInstance().init();

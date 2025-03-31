@@ -76,7 +76,7 @@ public class Generation {
                         else blocks[x][y][z] = BlockType.AIR;
                     } else {
                         // Below or at terrain surface
-                        if (heightMap[x][z] > GRASS_HEIGHT_THRESHOLD) blocks[x][y][z] = BlockType.GRASS;
+                        if (heightMap[x][z] > GRASS_HEIGHT_THRESHOLD) blocks[x][y][z] = BlockType.DIRT;
                         else blocks[x][y][z] = BlockType.DIRT;
                     }
                 }
